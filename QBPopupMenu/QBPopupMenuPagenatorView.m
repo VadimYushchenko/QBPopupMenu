@@ -12,7 +12,7 @@
 
 + (CGFloat)pagenatorWidth
 {
-    return 10 + 10 * 2;
+    return 20 + 10 * 2;
 }
 
 + (instancetype)leftPagenatorViewWithTarget:(id)target action:(SEL)action

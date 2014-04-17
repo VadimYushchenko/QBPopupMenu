@@ -62,11 +62,11 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
         // Property settings
         self.items = items;
         self.height = 36;
-        self.cornerRadius = 8;
+        self.cornerRadius = 3;
         self.arrowSize = 9;
         self.arrowDirection = QBPopupMenuArrowDirectionDefault;
         self.popupMenuInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-        self.margin = 2;
+        self.margin = 0;
         
         self.color = [[UIColor blackColor] colorWithAlphaComponent:0.8];
         self.highlightedColor = [[UIColor darkGrayColor] colorWithAlphaComponent:0.8];
@@ -158,12 +158,12 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
     [self showPage:0];
     
     // Create overlay view
-    self.overlayView = ({
-        QBPopupMenuOverlayView *overlayView = [[QBPopupMenuOverlayView alloc] initWithFrame:view.bounds];
-        overlayView.popupMenu = self;
-        
-        overlayView;
-    });
+//    self.overlayView = ({
+//        QBPopupMenuOverlayView *overlayView = [[QBPopupMenuOverlayView alloc] initWithFrame:view.bounds];
+//        overlayView.popupMenu = self;
+//        
+//        overlayView;
+//    });
     
     // Delegate
     if (self.delegate && [self.delegate respondsToSelector:@selector(popupMenuWillAppear:)]) {
@@ -171,11 +171,11 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
     }
     
     // Show
-    [view addSubview:self.overlayView];
+    [view addSubview:self];
     
     if (animated) {
         self.alpha = 0;
-        [self.overlayView addSubview:self];
+//        [self.overlayView addSubview:self];
         
         [UIView animateWithDuration:kQBPopupMenuAnimationDuration animations:^(void) {
             self.alpha = 1.0;
@@ -188,7 +188,7 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
             }
         }];
     } else {
-        [self.overlayView addSubview:self];
+//        [self.overlayView addSubview:self];
         
         self.visible = YES;
         
@@ -215,7 +215,7 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
             self.alpha = 0;
         } completion:^(BOOL finished) {
             [self removeFromSuperview];
-            [self.overlayView removeFromSuperview];
+//            [self.overlayView removeFromSuperview];
             
             self.visible = NO;
             
@@ -226,7 +226,7 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
         }];
     } else {
         [self removeFromSuperview];
-        [self.overlayView removeFromSuperview];
+//        [self.overlayView removeFromSuperview];
         
         self.visible = NO;
         
@@ -295,7 +295,7 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
 {
     NSMutableArray *groupedItemViews = [NSMutableArray array];
     
-    CGFloat pagenatorWidth = [QBPopupMenuPagenatorView pagenatorWidth];
+    CGFloat pagenatorWidth = self.showPagenator?[QBPopupMenuPagenatorView pagenatorWidth] : 0;
     
     // Create new array
     NSMutableArray *itemViews = [NSMutableArray array];
@@ -308,9 +308,13 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
         // Clear state
         [self resetItemViewState:itemView];
         
-        CGSize itemViewSize = [itemView sizeThatFits:CGSizeZero];
+       
+        if (CGSizeEqualToSize(self.itemsSize, CGSizeZero)) {
+            self.itemsSize = [itemView sizeThatFits:CGSizeZero];
+        }
         
-        if (itemViews.count > 0 && width + itemViewSize.width + pagenatorWidth > maximumWidth) {
+        
+        if (itemViews.count > 0 && width + self.itemsSize.width + pagenatorWidth > maximumWidth) {
             [groupedItemViews addObject:[itemViews copy]];
             
             // Create new array
@@ -322,7 +326,7 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
         }
         
         [itemViews addObject:itemView];
-        width += itemViewSize.width;
+        width += self.itemsSize.width;
     }
     
     if (itemViews.count > 0) {
@@ -396,8 +400,14 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
         }
         
         // Set item view frame
-        CGSize size = [itemView sizeThatFits:CGSizeZero];
-        CGFloat width = size.width;
+        if (CGSizeEqualToSize(self.itemsSize, CGSizeZero)) {
+            self.itemsSize = [itemView sizeThatFits:CGSizeZero];
+        } else {
+//            height = self.itemsSize.height + self.arrowSize;
+        }
+        
+
+        CGFloat width = self.itemsSize.width;
         
         if ((i == 0 && self.actualArrorDirection == QBPopupMenuArrowDirectionLeft) ||
             (i == self.visibleItemViews.count - 1 && self.actualArrorDirection == QBPopupMenuArrowDirectionRight)) {
@@ -808,9 +818,11 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
     } CGContextRestoreGState(context);
     
     // Separator
-    if (direction == QBPopupMenuArrowDirectionDown || direction == QBPopupMenuArrowDirectionUp) {
-        for (QBPopupMenuItemView *itemView in self.visibleItemViews) {
-            [self drawSeparatorInRect:CGRectMake(itemView.frame.origin.x + itemView.frame.size.width - 1, rect.origin.y, 1, rect.size.height)];
+    if (self.showSeparator) {
+        if (direction == QBPopupMenuArrowDirectionDown || direction == QBPopupMenuArrowDirectionUp) {
+            for (QBPopupMenuItemView *itemView in self.visibleItemViews) {
+                [self drawSeparatorInRect:CGRectMake(itemView.frame.origin.x + itemView.frame.size.width - 1, rect.origin.y, 1, rect.size.height)];
+            }
         }
     }
 }
@@ -866,8 +878,10 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
     } CGContextRestoreGState(context);
     
     // Separator
-    if (!lastItem) {
-        [self drawSeparatorInRect:CGRectMake(rect.origin.x + rect.size.width - 1, rect.origin.y, 1, rect.size.height)];
+    if (self.showSeparator) {
+        if (!lastItem) {
+            [self drawSeparatorInRect:CGRectMake(rect.origin.x + rect.size.width - 1, rect.origin.y, 1, rect.size.height)];
+        }
     }
 }
 
@@ -879,6 +893,21 @@ static const NSTimeInterval kQBPopupMenuAnimationDuration = 0.2;
     CGContextSaveGState(context); {
         CGContextClearRect(context, rect);
     } CGContextRestoreGState(context);
+}
+
+-(UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
+    
+    NSLog(@"%@ | %@",NSStringFromCGRect(self.bounds),NSStringFromCGPoint(point));
+    
+    if (CGRectContainsPoint(self.bounds, point)) {
+        NSLog(@"Contain");
+    }else {
+        NSLog(@"Not containe");
+        [self dismissAnimated:YES];
+    }
+    
+    
+    return [super hitTest:point withEvent:event];
 }
 
 @end

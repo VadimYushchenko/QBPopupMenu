@@ -43,11 +43,10 @@
             
             // Set style
             button.contentMode = UIViewContentModeScaleAspectFit;
-            button.titleLabel.font = [UIFont systemFontOfSize:14.0];
+            button.titleLabel.font = item.font?:[UIFont systemFontOfSize:14];
             button.imageView.contentMode = UIViewContentModeScaleAspectFit;
-            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-            
+            [button setTitleColor:item.textColor?:[UIColor whiteColor] forState:UIControlStateNormal];
+            [button setTitleColor:item.textColor?:[UIColor whiteColor] forState:UIControlStateHighlighted];
             button;
         });
         [self addSubview:self.button];
@@ -117,8 +116,11 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
-    buttonSize.width += 10 * 2;
+    CGSize buttonSize = [self.button sizeThatFits:size];
+//    if (CGSizeEqualToSize(size, CGSizeZero)) {
+            buttonSize.width += 10 * 2;
+//    }
+
     
     return buttonSize;
 }

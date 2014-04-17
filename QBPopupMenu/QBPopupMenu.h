@@ -44,9 +44,12 @@ typedef NS_ENUM(NSUInteger, QBPopupMenuArrowDirection) {
 @property (nonatomic, assign) QBPopupMenuArrowDirection arrowDirection;
 @property (nonatomic, assign) UIEdgeInsets popupMenuInsets;
 @property (nonatomic, assign) CGFloat margin;
-
+@property (nonatomic, assign) BOOL showSeparator;
+@property (nonatomic, assign) BOOL showPagenator;
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) UIColor *highlightedColor;
+@property (nonatomic) CGSize itemsSize;
+
 
 + (instancetype)popupMenuWithItems:(NSArray *)items;
 - (instancetype)initWithItems:(NSArray *)items;

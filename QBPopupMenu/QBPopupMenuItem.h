@@ -16,6 +16,10 @@
 @property (nonatomic, copy, readonly) NSString *title;
 @property (nonatomic, copy, readonly) UIImage *image;
 
+@property (nonatomic, strong) UIFont *font;
+@property (nonatomic, strong) UIColor *textColor;
+
+
 + (instancetype)itemWithTitle:(NSString *)title target:(id)target action:(SEL)action;
 + (instancetype)itemWithImage:(UIImage *)image target:(id)target action:(SEL)action;
 + (instancetype)itemWithTitle:(NSString *)title image:(UIImage *)image target:(id)target action:(SEL)action;

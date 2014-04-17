@@ -25,15 +25,23 @@
     [super viewDidLoad];
     
     QBPopupMenuItem *item = [QBPopupMenuItem itemWithTitle:@"Hello" target:self action:@selector(action)];
+    item.textColor = [UIColor redColor];
+    item.font = [UIFont systemFontOfSize:14];
     QBPopupMenuItem *item2 = [QBPopupMenuItem itemWithTitle:@"Cut" target:self action:@selector(action)];
     QBPopupMenuItem *item3 = [QBPopupMenuItem itemWithTitle:@"Copy" target:self action:@selector(action)];
     QBPopupMenuItem *item4 = [QBPopupMenuItem itemWithTitle:@"Delete" target:self action:@selector(action)];
     QBPopupMenuItem *item5 = [QBPopupMenuItem itemWithImage:[UIImage imageNamed:@"clip"] target:self action:@selector(action)];
     QBPopupMenuItem *item6 = [QBPopupMenuItem itemWithTitle:@"Delete" image:[UIImage imageNamed:@"trash"] target:self action:@selector(action)];
-    NSArray *items = @[item, item2, item3, item4, item5, item6];
+    
+    NSArray *items = @[item, item2, item3, item4, item5,item6];
     
     QBPopupMenu *popupMenu = [[QBPopupMenu alloc] initWithItems:items];
-    popupMenu.highlightedColor = [[UIColor colorWithRed:0 green:0.478 blue:1.0 alpha:1.0] colorWithAlphaComponent:0.8];
+    popupMenu.itemsSize = CGSizeMake(50, 50);
+    popupMenu.showSeparator = NO;
+    popupMenu.showPagenator = YES;
+    popupMenu.height = 50;
+    popupMenu.color = [UIColor blackColor];
+    popupMenu.highlightedColor = [[UIColor colorWithRed:0.941 green:0.949 blue:0.957 alpha:1.000] colorWithAlphaComponent:0.8];
     self.popupMenu = popupMenu;
     
     QBPlasticPopupMenu *plasticPopupMenu = [[QBPlasticPopupMenu alloc] initWithItems:items];
